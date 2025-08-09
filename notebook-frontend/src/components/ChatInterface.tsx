@@ -1,17 +1,22 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import MessageBubble from "./MessageBubble";
+import { instance } from "@/api";
 
 type Message = {
   role: "user" | "ai"
   text: string
 }
 
-export default function ChatInterface({ pdfId }: { pdfId: string }) {
+export default function ChatInterface({ pdfId, onMentionPage }: { pdfId: string, onMentionPage: (page: number) => void  }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setMessages([]);
+  },[pdfId])
 
   const sendMessage = async () => {
     if (!input.trim()) return
@@ -22,14 +27,12 @@ export default function ChatInterface({ pdfId }: { pdfId: string }) {
     setLoading(true)
 
     try {
-      const res = await fetch("http://localhost:3000/api/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input, pdfId }),
-      })
+      const res = await instance.post("/ask", { pdfId, question: input });
+      console.log("RES of ask ", res);
 
-      const data = await res.json()
+      const data = await res.data;
       setMessages((prev) => [...prev, { role: "ai", text: data.answer }])
+      onMentionPage(data.mentionedPage || null)
     } catch (err) {
       setMessages((prev) => [
         ...prev,

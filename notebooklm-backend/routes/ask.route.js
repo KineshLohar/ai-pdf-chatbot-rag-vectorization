@@ -1,4 +1,4 @@
-// routes/ask.route.js
+
 import express from 'express';
 import { handleAsk } from '../controllers/askController.js';
 const router = express.Router();

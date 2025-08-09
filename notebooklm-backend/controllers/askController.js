@@ -1,4 +1,4 @@
-// controllers/askController.js
+
 import { retrieveAnswer } from '../services/ragPipeline.js';
 
 export async function handleAsk(req, res) {

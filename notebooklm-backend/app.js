@@ -1,4 +1,3 @@
-// server.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -23,7 +22,6 @@ async function startServer() {
         process.exit(1);
       }
     
-      // 2) Ensure schema exists
       try {
         await ensureSchema();
       } catch (err) {
@@ -38,9 +36,8 @@ async function startServer() {
         });
     } catch (err) {
         console.error("Fatal error during startup:", err);
-        process.exit(1);  // Exit if setup fails
+        process.exit(1); 
     }
 }
 
-// 🚀 Start the server
 startServer();

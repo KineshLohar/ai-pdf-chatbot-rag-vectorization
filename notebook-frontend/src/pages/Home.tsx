@@ -1,13 +1,14 @@
+import React, { useState } from "react";
 import { instance } from "@/api";
 import ChatInterface from "@/components/ChatInterface";
 import FileUpload from "@/components/FileUpload";
 import Navbar from "@/components/Navbar";
 import PdfViewer from "@/components/PdfViewer";
-import { useState } from "react";
 
 export default function Main() {
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>("")
-    const [pdfId, setPdfId] = useState<string | null>(null)
+    const [pdfId, setPdfId] = useState<string | null>(null);
+    const [scrollToPage, setScrollToPage] = useState<number | null>(null)
 
     const handleUpload = async (file: File) => {
         const formData = new FormData()
@@ -20,9 +21,8 @@ export default function Main() {
 
             console.log("RES OF UPLOAD", res);
 
-            setPdfId(res.data);
+            setPdfId(res.data?.pdfId);
 
-            // 👇 Create preview URL
             const previewUrl = URL.createObjectURL(file)
             setPdfPreviewUrl(previewUrl)
         } catch (err) {
@@ -41,10 +41,10 @@ export default function Main() {
             ) : (
                 <div className="flex-1 flex overflow-hidden">
                     <div className="w-1/2 border-r overflow-y-auto">
-                        <ChatInterface pdfId={pdfId} />
+                        <ChatInterface pdfId={pdfId} onMentionPage={setScrollToPage} />
                     </div>
                     <div className="w-1/2 overflow-y-auto">
-                        <PdfViewer url={pdfPreviewUrl} />
+                        <PdfViewer url={pdfPreviewUrl} scrollToPage={scrollToPage} />
                     </div>
                 </div>
             )}

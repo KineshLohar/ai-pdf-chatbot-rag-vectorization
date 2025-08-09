@@ -1,4 +1,3 @@
-// services/vectorStore.js
 import weaviate from 'weaviate-ts-client';
 import dotenv from 'dotenv';
 import { chunkText } from '../utils/chunkText.js';
@@ -30,7 +29,7 @@ export async function ensureSchema() {
   await client.schema.classCreator().withClass({
     class: 'PDFChunk',
     description: 'PDF text chunks with page metadata',
-    vectorizer: 'none', // we provide vectors
+    vectorizer: 'none', 
     properties: [
       { name: 'pdfId', dataType: ['string'] },
       { name: 'page', dataType: ['int'] },
@@ -40,28 +39,19 @@ export async function ensureSchema() {
   console.log('Created class PDFChunk in Weaviate');
 }
 
-/**
- * Store pages (page objects) in Weaviate.
- * pages: [{page, text}, ...]
- * chunkFn: chunkText(text) => [chunks]
- * embedFn: async (text) => embedding array
- * returns pdfId
- */
 export async function storeVectors(pages, chunkFn = chunkText, embedFn = getEmbedding) {
   if (!Array.isArray(pages) || pages.length === 0) throw new Error('No pages to store');
 
   await ensureSchema();
   const pdfId = Date.now().toString();
 
-  // Process sequentially per page to keep memory bounds; batch embeddings per page for perf
   for (const { page, text } of pages) {
-    const chunks = chunkFn(text, 200); // ~200 words default
-    // embed in small batches to avoid overwhelming OpenAI
+    const chunks = chunkFn(text, 200); 
+
     const batchSize = 8;
     for (let i = 0; i < chunks.length; i += batchSize) {
       const slice = chunks.slice(i, i + batchSize);
       const embeddings = await Promise.all(slice.map(c => embedFn(c)));
-      // create objects in Weaviate
       const creations = slice.map((chunkText, idx) => {
         return client.data.creator()
           .withClassName('PDFChunk')
@@ -76,9 +66,6 @@ export async function storeVectors(pages, chunkFn = chunkText, embedFn = getEmbe
   return pdfId;
 }
 
-/**
- * Query top-k chunks by question embedding and pdfId filter
- */
 export async function queryVectors(pdfId, questionEmbedding, topK = 4) {
   const res = await client.graphql.get()
     .withClassName('PDFChunk')
@@ -88,7 +75,6 @@ export async function queryVectors(pdfId, questionEmbedding, topK = 4) {
     .withLimit(topK)
     .do();
 
-  // response shape variation: either res.data.Get.PDFChunk or res.Get.PDFChunk
   const hits = res?.data?.Get?.PDFChunk || res?.Get?.PDFChunk || [];
   return (hits || []).map(h => ({
     text: h.text,

@@ -1,11 +1,7 @@
-// utils/chunkText.js
-/**
- * Basic chunker that respects sentence boundaries and keeps chunk sizes around maxWords.
- * Returns array of chunk strings.
- */
+
 export function chunkText(text, maxWords = 200) {
   if (!text) return [];
-  // naive sentence split
+  
   const sentences = text.match(/[^\\.\\!\\?]+[\\.\\!\\?]+|[^\\.\\!\\?]+$/g) || [text];
   const chunks = [];
   let current = '';
