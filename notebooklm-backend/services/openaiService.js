@@ -20,7 +20,7 @@ export async function createChatCompletion(messages, opts = {}) {
         messages,
         temperature: opts.temperature ?? 0.2,
         max_tokens: opts.maxTokens ?? 512
-    });tent;
+    });
 
     const rawContent = response.choices?.[0]?.message?.content ?? '';
 
