@@ -1,9 +1,9 @@
-import React, { useState } from "react";
 import { instance } from "@/api";
 import ChatInterface from "@/components/ChatInterface";
 import FileUpload from "@/components/FileUpload";
 import Navbar from "@/components/Navbar";
 import PdfViewer from "@/components/PdfViewer";
+import { useState } from "react";
 
 export default function Main() {
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>("")

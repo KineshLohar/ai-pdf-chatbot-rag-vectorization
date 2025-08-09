@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Worker, Viewer } from "@react-pdf-viewer/core";
-import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import { Viewer, Worker } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
+import { useEffect, useState } from "react";
 
 interface PdfViewerProps {
   url: string | null;
