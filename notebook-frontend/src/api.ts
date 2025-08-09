@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export const instance = axios.create({
-  baseURL: process.env.VITE_BACKEND_URL || "http://localhost:5000/api", // Change when deploying
+  baseURL: import.meta.env.VITE_BACKEND_URL || "Unable to fetch backend url", // Change when deploying
   headers: {
     "Content-Type": "application/json"
   }
