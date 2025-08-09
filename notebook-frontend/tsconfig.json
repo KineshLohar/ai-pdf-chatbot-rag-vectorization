@@ -10,6 +10,9 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "noEmit": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
     "jsx": "react-jsx", 
     "paths": {
       "@/*": ["./src/*"]
