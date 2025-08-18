@@ -41,7 +41,7 @@ export async function parseWithLlamaCloud(buffer, filename = 'file.pdf', opts = 
         throw new Error('LlamaParse: upload returned no job id. Response keys: ' + Object.keys(data).join(', '));
     }
 
-    const timeoutMs = opts.timeoutMs || 60000; 
+    const timeoutMs = opts.timeoutMs || 60000;
     const start = Date.now();
     while (true) {
         console.log("CHECKING JOB_DETAILS", JOB_DETAILS, jobId);
@@ -71,9 +71,12 @@ export async function parseWithLlamaCloud(buffer, filename = 'file.pdf', opts = 
     try {
         const mdResp = await axios.get(JOB_RESULT_MARKDOWN(jobId), { headers, responseType: 'text' });
         mdBody = mdResp.data;
+        // console.log("MARKDOWN RESPONSE 1", mdBody);
+
     } catch (err) {
         const mdResp2 = await axios.get(JOB_RESULT_RAW_MD(jobId), { headers, responseType: 'text' });
         mdBody = mdResp2.data;
+        // console.log("MARKDOWN RESPONSE 2", mdBody);
     }
 
     if (!mdBody) throw new Error('LlamaParse returned empty markdown result');
@@ -82,13 +85,18 @@ export async function parseWithLlamaCloud(buffer, filename = 'file.pdf', opts = 
 }
 
 function parsePagesFromMarkdown(markdown, pageSeparatorToken = '\n===PAGE {pageNumber}===\n') {
-    const sepPrefix = pageSeparatorToken.split('{pageNumber}')[0]; 
-    const parts = markdown.split(sepPrefix);
+    const sepPrefix = pageSeparatorToken.split('{pageNumber}')[0];
+    const parts = (String(JSON.parse(markdown)?.markdown) || '').split(sepPrefix);
+
+    console.log("--------------------------------------------------------------- sepPrefix", markdown);
+    console.log("--------------------------------------------------------------- sepPrefix", sepPrefix);
+    console.log("--------------------------------------------------------------- parts", parts);
+    
 
     const pages = [];
-    for (let i = 0; i < parts.length; i++) {
+    for (let i = 0; i < parts?.length; i++) {
         const part = parts[i];
-        if (i === 0 && !part.trim()) continue; 
+        if (i === 0 && !part.trim()) continue;
         const m = part.match(/^(\d+)===(?:\r?\n)?([\s\S]*)$/);
         if (m) {
             const pageNum = Number(m[1]);
