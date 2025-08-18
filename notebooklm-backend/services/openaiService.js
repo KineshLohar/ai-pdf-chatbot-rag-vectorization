@@ -14,12 +14,44 @@ export async function getEmbedding(text) {
     return resp.data[0].embedding;
 }
 
+export async function createChatSuggestions(messages, opts = {}) {
+    const response = await client.chat.completions.create({
+      model: opts.model || 'gpt-4o-mini',
+      messages,
+      temperature: opts.temperature ?? 0.2,
+      max_tokens: opts.maxTokens ?? 5120
+    });
+  
+    const rawContent = response.choices?.[0]?.message?.content ?? '';
+  
+    console.log("RAW CONTENT ON QUESTION SUGGESTION", rawContent);
+  
+    let suggestions = [];
+  
+    try {
+      const parsed = JSON.parse(rawContent);
+      if (Array.isArray(parsed)) {
+        suggestions = parsed.map(q => ({
+          question: q.question || '',
+          mentionedPages: Array.isArray(q.mentionedPages) ? q.mentionedPages : []
+        }));
+      }
+    } catch (e) {
+      console.error("Failed to parse question suggestions:", e);
+      // You may fallback here if needed
+      throw new Error("Failed to parse question suggestions")
+    }
+  
+    return suggestions;
+  }
+  
+
 export async function createChatCompletion(messages, opts = {}) {
     const response = await client.chat.completions.create({
         model: opts.model || 'gpt-4o-mini',
         messages,
         temperature: opts.temperature ?? 0.2,
-        max_tokens: opts.maxTokens ?? 512
+        max_tokens: opts.maxTokens ?? 5120
     });
 
     const rawContent = response.choices?.[0]?.message?.content ?? '';

@@ -6,10 +6,12 @@ import { instance } from "@/api";
 
 type Message = {
   role: "user" | "ai"
-  text: string
+  text: string,
+  page?: number,
+  citations?: number[] | null | []
 }
 
-export default function ChatInterface({ pdfId, onMentionPage }: { pdfId: string, onMentionPage: (page: number) => void  }) {
+export default function ChatInterface({ pdfId, onMentionPage }: { pdfId: string, onMentionPage: (page: number | null) => void  }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
@@ -31,7 +33,7 @@ export default function ChatInterface({ pdfId, onMentionPage }: { pdfId: string,
       console.log("RES of ask ", res);
 
       const data = await res.data;
-      setMessages((prev) => [...prev, { role: "ai", text: data.answer }])
+      setMessages((prev) => [...prev, { role: "ai", text: data.answer, page: data?.mentionedPage, citations: data?.citations  }])
       onMentionPage(data.mentionedPage || null)
     } catch (err) {
       setMessages((prev) => [
@@ -43,11 +45,14 @@ export default function ChatInterface({ pdfId, onMentionPage }: { pdfId: string,
     }
   }
 
+  console.log("MESAGES ", messages);
+  
+
   return (
     <div className="flex flex-col h-full w-full p-4">
       <div className="flex-1 overflow-y-auto space-y-2 pr-2">
         {messages.map((msg, i) => (
-          <MessageBubble key={i} role={msg.role} text={msg.text} />
+          <MessageBubble key={i} role={msg.role} text={msg.text} page={msg?.page} onMentionPage={onMentionPage} citations={msg?.citations} />
         ))}
       </div>
       <div className="flex items-center gap-2 mt-2">

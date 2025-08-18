@@ -38,7 +38,7 @@ Return JSON in the exact format below:
     { role: 'user', content: userPrompt }
   ];
 
-  const { answer, mentionedPages } = await createChatCompletion(messages, { temperature: 0.0, maxTokens: 500 });
+  const { answer, mentionedPages } = await createChatCompletion(messages, { temperature: 0.0, maxTokens: 5000 });
 
   const citations = Array.from(new Set(mentionedPages)).filter(p => Number.isInteger(p));
   const mentionedPage = citations.length ? citations[0] : null;
